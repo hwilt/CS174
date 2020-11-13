@@ -1,2 +1,2 @@
-.exe
-.exe.stackdump
+*.exe
+*.stackdump
