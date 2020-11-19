@@ -5,6 +5,9 @@ int main(int argc, char** argv) {
     loadPlayers(m);
     // TODO: Fill this in.  Query m for a player corresponding
     // to the passed in arguments, and print out their information
+    
+    delete m;
     return 0;
 }
+
 
