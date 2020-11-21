@@ -52,9 +52,9 @@ void loadPlayers(Map* map) {
             }
             else if(i == 4){
                 year = stoi(line);
-                Player p(name, school, height, weight, year);
-                HashableString n(name);
-                map->put(n, p);
+                Player* p = new Player(name, school, height, weight, year);
+                HashableString HS(name);
+                map->put(&HS, p);
             }
             i = (i+1)%5;
         }
