@@ -5,6 +5,8 @@
 #include "hashable.h"
 #include "cloneable.h"
 #include "linkedmap.h"
+#include "hashtable.cpp"
+
 
 class Person: public Cloneable {
     private:
@@ -24,7 +26,7 @@ class Person: public Cloneable {
 };
 
 int main() {
-    Map* m = new LinkedMap();
+    Map* m = new HashTable(100);
     HashableString name1("chris");
     Person p1("chris", 31);
     m->put(&name1, &p1);
@@ -46,7 +48,7 @@ int main() {
     // Remove "chris," and make sure it's no longer in the map
     m->remove(&chris);
     cout << m->containsKey(&name1) << endl;
-
+    
     delete m;
     return 0;
 }
