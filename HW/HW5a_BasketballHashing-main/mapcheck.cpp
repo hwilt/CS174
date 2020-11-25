@@ -49,7 +49,7 @@ void compareMaps() {
     }
     //Step 5
     printf("%zu number of Players\n", N);
-    printf("Number of Operations in hash table: %zu\nAverage %zu per player", m2->numOps, m2->numOps/N);
+    printf("Number of Operations in hash table: %zu\nAverage %zu per player\n", m2->numOps, m2->numOps/N);
     printf("Number of Operations in linked map: %zu\nAverage %zu per player", m1->numOps, m1->numOps/N);
 }
 

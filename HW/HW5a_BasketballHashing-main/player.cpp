@@ -38,27 +38,26 @@ void loadPlayers(Map* map) {
         int weight;
         int year;
         while(getline(file, line)) {
-            i = (i + 1)%5;
-            switch(i){
-                case 1:
-                    name = line;
-                    break;
-                case 2:
-                    weight = stoi(line);
-                    break;
-                case 3:
-                    height = stoi(line);
-                    break;
-                case 4:
-                    school = line;
-                    break;
-                case 0:
-                    year = stoi(line);
-                    Player* p = new Player(name, school, height, weight, year);
-                    HashableString n(name);
-                    map->put(&n, p);
-                    break;
+            if(i == 0){
+                name = line;
             }
+            if(i == 1){
+                weight = atoi(line.c_str());
+            }    
+            if(i == 2){
+                height = atoi(line.c_str());
+            }   
+            if(i == 3){
+                school = line;
+            }  
+            if(i == 4){
+                year = atoi(line.c_str());
+                Player* p = new Player(name, school, height, weight, year);
+                HashableString n(name);
+                map->put(&n, p);
+                delete p;
+            }
+            i = (i + 1)%5;
         }
     }
 }
