@@ -5,7 +5,7 @@
 #include "hashable.h"
 #include "cloneable.h"
 #include "linkedmap.h"
-#include "hashtable.cpp"
+#include "hashtable.h"
 
 
 class Person: public Cloneable {

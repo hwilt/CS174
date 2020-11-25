@@ -34,14 +34,9 @@ HashNode::~HashNode() {
  * at the front of the map
  */
 void HashTable::removeFirst(size_t i) {
+    numOps++;
     HashNode* entry = table[i];
-    while (entry != NULL) {
-        numOps++;
-        HashNode* prev = entry;
-        entry = entry->next;
-        delete prev;
-    }
-    table[i] = NULL;
+    table[i] = table[i]->next;
     delete entry;
 }
 
@@ -52,9 +47,6 @@ void HashTable::removeFirst(size_t i) {
 HashTable::HashTable(size_t NBins) {
     this->NBins = NBins;
     table = new HashNode*[NBins];
-    for(int i = 0; i < NBins; i++){
-        table[i] = NULL;
-    }
 }
 
 /**
@@ -63,8 +55,12 @@ HashTable::HashTable(size_t NBins) {
  */
 HashTable::~HashTable() {
     // Delete all nodes that have been allocated
+    HashNode* node;
     for(int i = 0; i < NBins; i++){
-        removeFirst(i);
+        node = table[i];
+        while(node != NULL){
+            removeFirst(i);
+        }
     }
     delete[] table;
 }
@@ -78,7 +74,7 @@ HashTable::~HashTable() {
  * @param value The value, which is cloneable
  */
 void HashTable::put(Hashable* key, Cloneable* value) {
-    int h = (key->getHash())%NBins;
+    size_t h = (key->getHash())%NBins;
     HashNode* newHashNode = new HashNode(key, value);
     if (table[h] == NULL) {
         table[h] = newHashNode;
@@ -97,7 +93,7 @@ void HashTable::put(Hashable* key, Cloneable* value) {
 */
 Cloneable* HashTable::get(Hashable* key) {
     Cloneable* ret = NULL;
-    int h = (key->getHash())%NBins;
+    size_t h = (key->getHash())%NBins;
     HashNode* node = table[h];
     while (node != NULL && !node->key->equals(key)) {
         numOps++;
@@ -116,25 +112,21 @@ Cloneable* HashTable::get(Hashable* key) {
  * @return value A pointer to the associated copy of the value
  */
 void HashTable::remove(Hashable* key) {
-    int h = (key->getHash())%NBins;
-    HashNode* node = table[h];
-    if (node != NULL) {
-        if (node->key->equals(key)) {
-            numOps++;
-            HashNode* prev = node;
-            node = node->next;
-            delete prev;
+    size_t h = (key->getHash())%NBins;
+    if (table[h] != NULL) {
+        if (table[h]->key->equals(key)) {
+            removeFirst(h);
         }
         else {
-            HashNode* last = node;
-            HashNode* node1 = node->next;
-            while (node1 != NULL && !node1->key->equals(key)) {
-                last = node1;
-                node1 = node1->next;
+            HashNode* last = table[h];
+            HashNode* node = table[h]->next;
+            while (node != NULL && !node->key->equals(key)) {
+                last = node;
+                node = node->next;
                 numOps++;
             } 
-            if (node1 != NULL) {
-                last->next = node1->next;
+            if (node != NULL) {
+                last->next = node->next;
                 numOps++;
                 delete node;
             }
@@ -149,7 +141,7 @@ void HashTable::remove(Hashable* key) {
 * @return true if key is in map, false otherwise
 */
 bool HashTable::containsKey(Hashable* key) {
-    int h = (key->getHash())%NBins;
+    size_t h = (key->getHash())%NBins;
     bool contains = false;
     HashNode* node = table[h];
     while (node != NULL && !node->key->equals(key)) {
@@ -170,25 +162,22 @@ bool HashTable::containsKey(Hashable* key) {
  * @return A pointer to the pointers of the keys in the list
  */
 Hashable** HashTable::getKeyList(size_t* N) {
-    for(int j = 0; j < NBins; j++){
-        HashNode* entry = table[j];
-        HashNode* node = entry;
-        *N = 0;
-        while (node != NULL) {
+    HashNode* entry;
+    *N = 0;
+    for(int i = 0; i < NBins; i++){
+        entry = table[i];
+        while(entry != NULL){
             (*N)++;
-            node = node->next;
+            entry = entry->next;
         }
-        node = entry;
     }
     Hashable** keyList = new Hashable*[*N];
+    size_t i = 0;
     for(int j = 0; j < NBins; j++){
-        HashNode* entry = table[j];
-        HashNode* node = entry;
-        size_t i = 0;
-        while (node != NULL) {
-            keyList[i] = node->key;
+        while(entry != NULL){
+            keyList[i] = entry->key;
             i++;
-            node = node->next;
+            entry = entry->next;
         }
     }
     return keyList;
