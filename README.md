@@ -5,5 +5,5 @@ Fall Freshman Year course at Ursinus College
 
 Course Founded in Objected Oriented Programming Lanuages
 
-Find at the Website
+Find more at the Website below:
 www.ctralie.com/Teaching/CS174_F2020/index.html
