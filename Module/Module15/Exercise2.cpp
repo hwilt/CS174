@@ -19,8 +19,7 @@ void inorder(TreeNode* node) {
     printf("%i ", node->value);
     if(node->right != NULL){
         inorder(node->right);
-    }
-    
+    }   
 }
 
 class BinaryTree {

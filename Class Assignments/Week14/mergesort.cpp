@@ -53,37 +53,22 @@ void printArray(int* x, int i1, int i2) {
  * @param i2 End of second chunk
  */
 void merge(int* x, int* y, int i1, int mid, int i2) {
-    int i = i1;
-    int j = mid+1;
-    int k = 0;
+    int h1 = i1;
+    int h2 = mid+1;
     
-    while(i <= mid && j <= i2) {
-		if(x[i] <= x[j]) {
-			y[k] = x[i];
-			k++; 
-            i++;
-		}
-		else {
-			y[k] = x[j];
-			k++; 
-            j++;
-		}
-	}
+    for(int j = i1; j <= i2; j++){
+        if(h2 > i2 || x[h1] < x[h2] && h1 <= mid){
+            y[j] = x[h1];
+            h1++;
+        }
+        else{
+            y[j] = x[h2];
+            h2++;
+        }
+    }
 
-    while(i <= mid) {
-		y[k] = x[i];
-		k++; 
-        i++;
-	}
-    
-    while(j <= i2) {
-		y[k] = x[j];
-		k++; 
-        j++;
-	}
-    
-    for(i = i1; i <= i2; i += 1) {
-		x[i] = y[i - i1];
+    for(int j = i1; j <= i2; j++) {
+		x[j] = y[j];
 	}
 }
 
