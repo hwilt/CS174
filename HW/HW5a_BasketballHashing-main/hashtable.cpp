@@ -60,6 +60,7 @@ HashTable::~HashTable() {
         node = table[i];
         while(node != NULL){
             removeFirst(i);
+            node = table[i];
         }
     }
     delete[] table;

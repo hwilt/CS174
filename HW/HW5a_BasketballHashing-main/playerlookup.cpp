@@ -13,8 +13,7 @@ int main(int argc, char** argv) {
     HashableString fullname(name);
     if(m->containsKey(&fullname)){
         Player* p = (Player*)m->get(&fullname);
-            p->printPlayer();
-        delete p;
+        p->printPlayer();
     }
     else{
         cout << name << " not found" << endl;

@@ -24,8 +24,8 @@ mapcheck: hashable.o linkedmap.o hashtable.o player.o player.h mapcheck.cpp
 person: hashable.o linkedmap.o hashtable.o person.cpp
 	$(CC) $(CFLAGS) -o person hashable.o linkedmap.o hashtable.o person.cpp
 
-stringtest: stringtest.cpp
-	$(CC) $(CFLAGS) -o stringtest stringtest.cpp 
+stringtest: stringtest.cpp hashable.o
+	$(CC) $(CFLAGS) -o stringtest hashable.o stringtest.cpp 
 
 clean:
 	rm *.o playerlookup mapcheck person

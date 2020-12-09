@@ -1,4 +1,4 @@
-#include "Hashable.cpp"
+#include "Hashable.h"
 #include <iostream>
 
 int main(){
