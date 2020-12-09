@@ -90,17 +90,12 @@ void printLevel(BinaryTree* T, int level) {
     printLevel(T->root, 1, level);
 }
 
-void spacing(int level){
-    string ret 
-}
 
 int main() {
     BinaryTree* T = makeExampleTree();
     int depth = getDepth(T);
-    for(int i = 1; i <= depth; i++){
-        printLevel(T, i);
-        printf("\n");
-    }
+    printLevel(T, 3);
+    printf("\n");
     delete T;
     return 0;
 }
