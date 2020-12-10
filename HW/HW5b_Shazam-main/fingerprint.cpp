@@ -52,7 +52,13 @@ Cloneable* Fingerprint::clone() {
  */
 bool isMax(double** S, int i, int j, int maxFreq, int nwin, int freqWin, int timeWin) {
     bool max = true;
-    // TODO: Fill this in
+    for(int row = i+freqWin; row <= i-freqWin; row++){
+        for(int col = j-timeWin; col <= j+timeWin; col++){
+            if(S[i][j] < S[row][col]){
+                max = true;
+            }
+        }
+    }
     return max;
 }
 
@@ -68,7 +74,13 @@ bool isMax(double** S, int i, int j, int maxFreq, int nwin, int freqWin, int tim
  */
 vector<Anchor>* findAnchors(double** S, int maxFreq, int nwin, int freqWin, int timeWin, double thresh) {
     vector<Anchor>* anchors = new vector<Anchor>();
-    // TODO: Fill this in
+    for(int row = 0; row <= maxFreq; row++){
+        for(int col = 0; col <= nwin; col++){
+            if(isMax(S, row, col, maxFreq, nwin, freqWin, timeWin) && S[row][col] >= thresh){
+                anchors->push_back(Anchor(row, col));
+            }
+        }
+    }
     return anchors;
 }
 
