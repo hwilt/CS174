@@ -52,11 +52,12 @@ Cloneable* Fingerprint::clone() {
  */
 bool isMax(double** S, int i, int j, int maxFreq, int nwin, int freqWin, int timeWin) {
     bool max = true;
-    for(int row = i+freqWin; row <= i-freqWin; row++){
-        for(int col = j-timeWin; col <= j+timeWin; col++){
-            if(S[i][j] < S[row][col]){
-                max = true;
+    for(int row = i-freqWin; row <= i+freqWin && row <= maxFreq && row >= 0; row++){
+        for(int col = j-timeWin; col <= j+timeWin && col <= nwin && col >= 0; col++){
+            if(S[row][col] > S[i][j]){
+                max = false;
             }
+            
         }
     }
     return max;
@@ -70,12 +71,12 @@ bool isMax(double** S, int i, int j, int maxFreq, int nwin, int freqWin, int tim
  * @param freqWin Half-length of window in frequency
  * @param timeWin Half-length of window in time
  * @param thresh Minimum value in spectrogram to consider
- * @return true if this element is greater than all elements in the window, false otherwise
+ * @return A vector of all fingerprints in the spectrogram
  */
 vector<Anchor>* findAnchors(double** S, int maxFreq, int nwin, int freqWin, int timeWin, double thresh) {
     vector<Anchor>* anchors = new vector<Anchor>();
-    for(int row = 0; row <= maxFreq; row++){
-        for(int col = 0; col <= nwin; col++){
+    for(int row = freqWin; row <= maxFreq; row++){
+        for(int col = timeWin; col <= nwin; col++){
             if(isMax(S, row, col, maxFreq, nwin, freqWin, timeWin) && S[row][col] >= thresh){
                 anchors->push_back(Anchor(row, col));
             }
