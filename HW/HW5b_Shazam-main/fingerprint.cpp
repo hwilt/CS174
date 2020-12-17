@@ -14,7 +14,14 @@ Anchor::Anchor(int freq, int win) {
  */
 vector<Anchor>* Anchor::searchTargetZone(vector<Anchor>* others, int dcenter, int width, int height) {
     vector<Anchor>* matches = new vector<Anchor>();
-    // TODO: Fill this in
+    for(int begin = 0; begin < (int)others->size(); begin++){
+        if(others->at(begin).freq <= this->freq+height &&
+            others->at(begin).freq >= this->freq-height &&
+            others->at(begin).win <= this->win+dcenter+width &&
+            others->at(begin).win >= this->win+dcenter-width){
+                matches->push_back(others->at(begin));
+        }
+    }
     return matches;
 }
 
@@ -28,8 +35,10 @@ Fingerprint::Fingerprint(Anchor* a1, Anchor* a2) {
     setAnchors(a1, a2);
 }
 size_t Fingerprint::getHash() {
-    // TODO: Fill this in
-    return 0; // This is a dummy value
+    size_t win1 = this->a1.win;
+    size_t win2 = this->a2.win; 
+    size_t dw = win2 - win1;
+    return a1.freq + a2.freq * 256 + dw * 256 * 256;
 }
 bool Fingerprint::equals(Hashable* other) {
     Fingerprint* otherp = (Fingerprint*)other;
@@ -52,12 +61,40 @@ Cloneable* Fingerprint::clone() {
  */
 bool isMax(double** S, int i, int j, int maxFreq, int nwin, int freqWin, int timeWin) {
     bool max = true;
-    for(int row = i-freqWin; row <= i+freqWin && row <= maxFreq && row >= 0; row++){
-        for(int col = j-timeWin; col <= j+timeWin && col <= nwin && col >= 0; col++){
-            if(S[row][col] > S[i][j]){
-                max = false;
+    if(i-freqWin >= 0){
+        for(int row = i-freqWin; row <= i+freqWin && row <= maxFreq; row++){
+            if(j-timeWin >= 0){
+                for(int col = j-timeWin; col <= j+timeWin && col <= nwin; col++){
+                    if(S[row][col] > S[i][j]){
+                        max = false;
+                    } 
+                }
             }
-            
+            else{
+                for(int col = 0; col <= j+timeWin && col <= nwin; col++){
+                    if(S[row][col] > S[i][j]){
+                        max = false;
+                    }
+                }
+            }
+        }
+    }
+    else{
+        for(int row = 0; row <= i+freqWin && row <= maxFreq; row++){
+            if(j-timeWin >= 0){
+                for(int col = j-timeWin; col <= j+timeWin && col <= nwin; col++){
+                    if(S[row][col] > S[i][j]){
+                        max = false;
+                    } 
+                }
+            }
+            else{
+                for(int col = 0; col <= j+timeWin && col <= nwin; col++){
+                    if(S[row][col] > S[i][j]){
+                        max = false;
+                    }   
+                }
+            }   
         }
     }
     return max;
@@ -75,8 +112,8 @@ bool isMax(double** S, int i, int j, int maxFreq, int nwin, int freqWin, int tim
  */
 vector<Anchor>* findAnchors(double** S, int maxFreq, int nwin, int freqWin, int timeWin, double thresh) {
     vector<Anchor>* anchors = new vector<Anchor>();
-    for(int row = freqWin; row <= maxFreq; row++){
-        for(int col = timeWin; col <= nwin; col++){
+    for(int row = 0; row <= maxFreq; row++){
+        for(int col = 0; col <= nwin; col++){
             if(isMax(S, row, col, maxFreq, nwin, freqWin, timeWin) && S[row][col] >= thresh){
                 anchors->push_back(Anchor(row, col));
             }
@@ -94,7 +131,13 @@ vector<Anchor>* findAnchors(double** S, int maxFreq, int nwin, int freqWin, int 
  */
 vector<Fingerprint>* getFingerprints(vector<Anchor>* anchors, int dcenter, int width, int height) {
     vector<Fingerprint>* fingerprints = new vector<Fingerprint>();
-    // TODO: Fill this in
+    vector<Anchor>* matches = new vector<Anchor>;
+    for(int Abegin = 0; Abegin < (int)anchors->size(); Abegin++){
+        matches = anchors->at(Abegin).searchTargetZone(anchors, dcenter, width, height);
+        for(int Mbegin = 0; Mbegin < (int)matches->size(); Mbegin++){
+            fingerprints->push_back(Fingerprint(&anchors->at(Abegin), &matches->at(Mbegin)));
+        }
+    }
     return fingerprints;
 }
 
@@ -225,7 +268,9 @@ void SongData::processAudio() {
     double** specgram = dsp.specgram(audio, N, win, hop, true, &nwin);
     printf("Finished getting spectrogram\n");
     vector<Anchor>* anchors = findAnchors(specgram, maxFreq, nwin, 8, 3, 0);
+    printf("Finished getting Anchors\n");
     fingerprints = getFingerprints(anchors, 86, 50, 21);
+    printf("Finished getting Fingerprints\n");
     if (outputFingerprints) {
         ofstream fout;
         fout.open(fpath);

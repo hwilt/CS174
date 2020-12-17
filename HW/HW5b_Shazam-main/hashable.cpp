@@ -7,8 +7,11 @@ HashableString::HashableString(string s) {
 
 size_t HashableString::getHash() {
     const char* c = s.c_str();
-    // TODO: Fill this in
-    return 0;
+    size_t hash = 0;
+    for(int i = 0; i < (int)s.length(); i++){
+        hash = 31*hash + (size_t)c[i];
+    }
+    return hash;
 }
 
 bool HashableString::equals(Hashable* other) {
