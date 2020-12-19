@@ -132,9 +132,9 @@ vector<Anchor>* findAnchors(double** S, int maxFreq, int nwin, int freqWin, int 
 vector<Fingerprint>* getFingerprints(vector<Anchor>* anchors, int dcenter, int width, int height) {
     vector<Fingerprint>* fingerprints = new vector<Fingerprint>();
     vector<Anchor>* matches = new vector<Anchor>;
-    for(int Abegin = 0; Abegin < (int)anchors->size(); Abegin++){
+    for(size_t Abegin = 0; Abegin < anchors->size(); Abegin++){
         matches = anchors->at(Abegin).searchTargetZone(anchors, dcenter, width, height);
-        for(int Mbegin = 0; Mbegin < (int)matches->size(); Mbegin++){
+        for(size_t Mbegin = 0; Mbegin < matches->size(); Mbegin++){
             fingerprints->push_back(Fingerprint(&anchors->at(Abegin), &matches->at(Mbegin)));
         }
     }
@@ -268,9 +268,7 @@ void SongData::processAudio() {
     double** specgram = dsp.specgram(audio, N, win, hop, true, &nwin);
     printf("Finished getting spectrogram\n");
     vector<Anchor>* anchors = findAnchors(specgram, maxFreq, nwin, 8, 3, 0);
-    printf("Finished getting Anchors\n");
     fingerprints = getFingerprints(anchors, 86, 50, 21);
-    printf("Finished getting Fingerprints\n");
     if (outputFingerprints) {
         ofstream fout;
         fout.open(fpath);
@@ -298,7 +296,7 @@ void SongData::processAudio() {
  * @param songs Array of info for songs in the database
  * @param NSongs Number of songs in the database
  */
-songInfo SongData::queryDatabase(HashTable* h, songInfo* songs, int NSongs) {
+songInfo SongData::queryDatabase(HashTable* db, songInfo* songs, int NSongs) {
     vector<HashTable*> histograms;
     int maxCount = 0;
     int maxIndex = 0;
@@ -307,11 +305,31 @@ songInfo SongData::queryDatabase(HashTable* h, songInfo* songs, int NSongs) {
         histograms.push_back(h);
     }
 
-    
-    // TODO: Fill this in
-    
-    
-    
+
+    for(size_t i = 0; i < this->fingerprints->size(); i++){
+        Hashable* key = &fingerprints->at(i);
+        if(db->containsKey(key)){
+            FingerprintList* ftlist = (FingerprintList*)db->get(key);
+            for(size_t j = 0; j < ftlist->size(); j++){
+                int copyindex = ftlist->at(j).index;
+                HashableInt copyoffset(ftlist->at(j).offset);
+                if(histograms.at(copyindex)->containsKey(&copyoffset)){
+                    HashableInt count(histograms.at(copyindex)->get(&copyoffset));
+                    histograms.at(copyindex)->put(&copyoffset, &count);
+                    /**if(maxCount < count){
+                        maxCount = count;
+                        maxIndex = j;
+                    }**/
+                }
+                else{
+                    HashableInt zero(0);
+                    histograms.at(copyindex)->put(&copyoffset, &zero);
+                }
+            }
+        }
+    }
+
+
     for (int i = 0; i < NSongs; i++) {
         delete histograms.at(i);
     }
