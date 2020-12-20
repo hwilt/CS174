@@ -307,19 +307,19 @@ songInfo SongData::queryDatabase(HashTable* db, songInfo* songs, int NSongs) {
 
 
     for(size_t i = 0; i < this->fingerprints->size(); i++){
-        Hashable* key = &fingerprints->at(i);
+        Fingerprint* key = &fingerprints->at(i);
         if(db->containsKey(key)){
             FingerprintList* ftlist = (FingerprintList*)db->get(key);
             for(size_t j = 0; j < ftlist->size(); j++){
                 int copyindex = ftlist->at(j).index;
                 HashableInt copyoffset(ftlist->at(j).offset);
                 if(histograms.at(copyindex)->containsKey(&copyoffset)){
-                    HashableInt count(histograms.at(copyindex)->get(&copyoffset));
+                    HashableInt count(((HashableInt*)(histograms.at(copyindex)->get(&copyoffset)))->getHash() + 1);
                     histograms.at(copyindex)->put(&copyoffset, &count);
-                    /**if(maxCount < count){
-                        maxCount = count;
-                        maxIndex = j;
-                    }**/
+                    if(maxCount < count.getHash()){
+                        maxCount = count.getHash();
+                        maxIndex = copyindex;
+                    }
                 }
                 else{
                     HashableInt zero(0);
