@@ -1,6 +1,6 @@
 # CS174
 
-Fall Freshman Year course at Ursinus College
+Fall Freshman Year Course at Ursinus College
 -Taught by Professor Tralie
 
 Course Founded in Objected Oriented Programming Lanuages
